@@ -8,6 +8,7 @@ using System;
 /// </summary>
 public class GameOverWorldState : IState
 {
+    GameController game;
     public GameOverWorldState()
     {
 
@@ -15,17 +16,19 @@ public class GameOverWorldState : IState
 
     public GameOverWorldState(GameObject go)
     {
-
+        game = go.GetComponent<GameController>();
     }
 
     public void OnEnter()
     {
+        game.userInterFace.overWorldGO.SetActive(true);
         Debug.Log("OnEnter: Game OverWorld");
     }
 
     public void OnExit()
     {
 
+        game.userInterFace.overWorldGO.SetActive(false);
         Debug.Log("OnExit: Game OverWorld");
     }
 

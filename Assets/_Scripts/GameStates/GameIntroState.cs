@@ -24,13 +24,13 @@ public class GameIntroState : IState
 
     public void OnEnter()
     {
+        gameController.userInterFace.titleScreenGO.SetActive(true);
         Debug.Log("OnEnter: Game Intro");
     }
 
     public void OnExit()
     {
         gameController.userInterFace.titleScreenGO.SetActive(false);
-        gameController.userInterFace.mainMenuGO.SetActive(true);
         Debug.Log("OnExit: Game Intro");
     }
 

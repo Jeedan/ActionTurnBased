@@ -20,6 +20,7 @@ public class GameMainMenuState : IState
 
     public void OnEnter()
     {
+        game.userInterFace.mainMenuGO.SetActive(true);
         Debug.Log("OnEnter: Game MainMenu");
     }
 

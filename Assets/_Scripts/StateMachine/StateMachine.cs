@@ -35,7 +35,7 @@ public class StateMachine
     public void ChangeState(string name)
     {
         IState newState = mStates[name];
-        if (newState != null && newState != currState) // if something is wrong check currentState()
+        if (newState != null && newState != currentState()) // if something is wrong check currentState()
         {
             PushState(name);
         }
@@ -65,21 +65,21 @@ public class StateMachine
         }
     }
 
-    public void Pop()
+    public void PopState(string key)
     {
-        IState popState = PopState();
-
-        Debug.Log("dict count: " + mStates.Count);
+        Debug.Log("Before dict count: " + mStates.Count);
+        IState popState = Pop();
         popState.OnExit();
         currentState().OnEnter();
+        mStates.Remove(key);
+        Debug.Log("After dict count: " + mStates.Count);
     }
 
-    public IState PopState()
+    private IState Pop()
     {
         if (statesStack.Count > 0)
             return statesStack.Pop();
-        else
-            return null;
+        else return null;
     }
 
     public void AddState(string name, IState state)
@@ -90,7 +90,6 @@ public class StateMachine
         }
     }
 
-    //TODO: FIX BELOWE
     // FIXME: methods without string seem to be incomplete
     public void ChangeState(IState _state)
     {
