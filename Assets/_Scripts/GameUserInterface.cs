@@ -7,17 +7,22 @@ public class GameUserInterface : MonoBehaviour
     public GameObject titleScreenGO;
     public GameObject mainMenuGO;
     public GameObject overWorldGO;
+    public GameObject battleGUIGO;
 
     public Image pressStartImage;
     public float duration = 0.2f;
     public float visibleDuration = 0.5f;
+
     // Use this for initialization
     void Start()
     {
         mainMenuGO.SetActive(false);
         overWorldGO.SetActive(false);
+        battleGUIGO.SetActive(false);
+
         StartCoroutine(fadeTextInOut());
     }
+
     IEnumerator fadeTextInOut()
     {
         Color initial = pressStartImage.color;

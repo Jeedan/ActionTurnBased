@@ -40,6 +40,6 @@ public class GameIntroState : IState
         {
             gameController.ChangeState("GameMainMenu");
         }
-        Debug.Log("OnUpdate: Game Intro");
+      //  Debug.Log("OnUpdate: Game Intro");
     }
 }

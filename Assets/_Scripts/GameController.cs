@@ -9,17 +9,25 @@ public class GameController : MonoBehaviour
     public GameObject dungeonMapContainer; // container of our dungeon map "scene"
     public GameObject battleSceneContainer; // container of our battle scene
 
-    public GameUserInterface TitleScreen { get { return userInterFace; } private set { } }
+    public PlayerController playerController;
+
+    // right now we will instantiate an enemy in BattleScene and pass it to this value
+    public Entity currentEnemy;
+
+    public GameObject[] Enemies;
     // Use this for initialization
     void Awake()
     {
         gameStateMachine = new StateMachine();
         userInterFace = gameObject.GetComponent<GameUserInterface>();
+
+        playerController = FindObjectOfType<PlayerController>();
     }
 
     void Start()
     {
         dungeonMapContainer.SetActive(false);
+        battleSceneContainer.SetActive(false);
         InitializeStates();
     }
 
@@ -65,6 +73,11 @@ public class GameController : MonoBehaviour
     public void PlayGameButton()
     {
         Debug.Log("PRESSED PLAY GAME");
+        GoToOverWorld();
+    }
+
+    public void GoToOverWorld()
+    {
         ChangeState("GameOverWorld");
     }
 
