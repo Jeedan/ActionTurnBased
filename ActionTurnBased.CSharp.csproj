@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Assets\Fade.cs" />
     <Compile Include="Assets\ScreenShake.cs" />
+    <Compile Include="Assets\_Scripts\Abilities\MeleeAttack.cs" />
     <Compile Include="Assets\_Scripts\BattleUserInterface.cs" />
     <Compile Include="Assets\_Scripts\Dungeons\DungeonInfo.cs" />
     <Compile Include="Assets\_Scripts\Entity.cs" />

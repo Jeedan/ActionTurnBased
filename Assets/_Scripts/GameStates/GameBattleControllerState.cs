@@ -37,7 +37,7 @@ public class GameBattleControllerState : IState
         InitEnemySpawn();
         player = game.playerController.gameObject.GetComponent<Entity>();
         enemy = game.currentEnemy;
-        Debug.Log("Dungeon Info: " + dungeonInfo.dungeonName + " minLVL " + dungeonInfo.minLevel + " maxLVL " +dungeonInfo.maxLevel);
+        Debug.Log("Dungeon Info: " + dungeonInfo.dungeonName + " minLVL " + dungeonInfo.minLevel + " maxLVL " + dungeonInfo.maxLevel);
     }
 
     void InitEnemySpawn()
@@ -65,7 +65,23 @@ public class GameBattleControllerState : IState
             // game.ChangeState("GameDungeonMap");
         }
 
-        if(player.Dead())
+        if (!player.basicAttack.isAttacking)
+        {
+            // todo clean up this attack timer
+            enemy.UpdateAttackTimer();
+            if (!enemy.basicAttack.isAttacking && enemy.attackReady)
+            {
+
+                //TODO look at the enemy attack animation
+                // try to seperate the code into its own file to see what could be the problem
+                Debug.Log("Enemy about to attack");
+               // enemy.PerformBasicAttack(player);
+
+            }
+        }
+
+
+        if (player.Dead())
         {
             Debug.Log("Game Over player died");
             game.PopState("BattleScene");

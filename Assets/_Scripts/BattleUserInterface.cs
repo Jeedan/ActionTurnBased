@@ -32,11 +32,25 @@ public class BattleUserInterface : MonoBehaviour
 
         InitializeButtonListeners(attackButton, player.AttackButton);
         InitializeButtonListeners(dodgeButton, player.DodgeButton);
+
+
+        player.GetPlayerEntity().OnAttackStart += OnPlayerAttack;
+        player.GetPlayerEntity().OnAttackFinish += OnPlayerAttackFinish;
     }
 
     private void InitializeButtonListeners(Button btn, UnityAction listener)
     {
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(listener);
+    }
+
+    private void OnPlayerAttack()
+    {
+        attackButton.interactable = false;
+    }
+
+    private void OnPlayerAttackFinish()
+    {
+        attackButton.interactable = true;
     }
 }

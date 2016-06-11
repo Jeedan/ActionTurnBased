@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
-    public Entity player;
     GameController game;
+    private Entity player;
 
     Entity target;
 
@@ -15,11 +16,10 @@ public class PlayerController : MonoBehaviour
         player = GetComponent<Entity>();
         game = FindObjectOfType<GameController>();
     }
-
+    
     // Update is called once per frame
     void Update()
     {
-
     }
 
     public void AttackButton()
@@ -35,9 +35,16 @@ public class PlayerController : MonoBehaviour
     public void Attack()
     {
         target = game.currentEnemy;
+
         if (target != null)
         {
-            player.DealDamage(target, player.damage);
+
+            player.OnAttackStart();
+            // set the target's position
+            player.basicAttack.SetTarget(target.gameObject);
+            player.basicAttack.SetTargetPosition(target.transform.position);
+            player.basicAttack.Anticipation();
+           // player.DealDamage(target, player.damage);
             
         }
     }
@@ -45,5 +52,10 @@ public class PlayerController : MonoBehaviour
     public void Dodge()
     {
         Debug.Log("Dodged enemy attack!");
+    }
+
+    public Entity GetPlayerEntity()
+    {
+        return player;
     }
 }
