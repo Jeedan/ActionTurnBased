@@ -9,8 +9,10 @@ public class GameBattleControllerState : IState
 
     Transform enemySpawn;
 
+    GameObject enemyGO;
     Entity enemy;
     Entity player;
+
 
     public GameBattleControllerState()
     {
@@ -42,7 +44,7 @@ public class GameBattleControllerState : IState
 
     void InitEnemySpawn()
     {
-        GameObject enemyGO = Object.Instantiate(game.Enemies[0]) as GameObject;
+        enemyGO = Object.Instantiate(game.Enemies[0]) as GameObject;
         enemySpawn = GameObject.Find("_EnemyPosition").transform;
         enemyGO.transform.SetParent(enemySpawn);
         enemyGO.transform.position = enemySpawn.position;
@@ -52,6 +54,8 @@ public class GameBattleControllerState : IState
 
     public void OnExit()
     {
+        // TODO SAVE OR RESET PLAYER AND ENEMY VALUES AND BATTLE STATE
+        GameObject.Destroy(enemyGO);
         game.battleSceneContainer.SetActive(false);
         game.userInterFace.battleGUIGO.SetActive(false);
         Debug.Log("OnExit: Game Battle");
@@ -68,6 +72,7 @@ public class GameBattleControllerState : IState
         if (!player.basicAttack.isAttacking)
         {
             // todo clean up this attack timer
+            // TODO entities need states to tell what part of their ability they are currently in
             enemy.UpdateAttackTimer();
             if (!enemy.basicAttack.isAttacking && enemy.attackReady)
             {
@@ -75,7 +80,7 @@ public class GameBattleControllerState : IState
                 //TODO look at the enemy attack animation
                 // try to seperate the code into its own file to see what could be the problem
                 Debug.Log("Enemy about to attack");
-               // enemy.PerformBasicAttack(player);
+                enemy.PerformBasicAttack(player);
 
             }
         }

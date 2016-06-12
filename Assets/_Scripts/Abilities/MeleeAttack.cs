@@ -10,12 +10,13 @@ public class MeleeAttack : MonoBehaviour
     private GameObject target;
 
     public float moveSpeed = 1.0f;
+    public float attackSpeed = 1.5f;
 
     public float anticiapationDuration = 0.5f;
     public float attackDuration = 0.5f;
     public float exitDuration = 0.5f;
 
-    public AnimationCurve TweenEase;
+  //  public AnimationCurve TweenEase;
 
     public bool isAttacking = false;
 
@@ -28,12 +29,15 @@ public class MeleeAttack : MonoBehaviour
 
     public Action OnAttackFinish;
 
+
+    public Action OnPlayAnticipation;
+
     // Use this for initialization
     void Start()
     {
         originalPosition = transform.position;
         myCollisionRadius = GetComponent<CapsuleCollider>().radius;
-        
+
     }
 
     public void SetTarget(GameObject _target)
@@ -46,6 +50,15 @@ public class MeleeAttack : MonoBehaviour
         targetPosition = _target;
     }
 
+    void PlayAnticipationAnimation()
+    {
+        if (OnPlayAnticipation != null)
+        {
+            OnPlayAnticipation(); // event for animations and other effects
+        }
+
+    }
+
     // initialization of ability
     // play an animation
     // wait a few seconds then perform the attack
@@ -54,6 +67,7 @@ public class MeleeAttack : MonoBehaviour
         // TODO start a coroutine
         isAttacking = true;
 
+        PlayAnticipationAnimation();
         StartCoroutine(Anticipate());
     }
 
@@ -64,7 +78,8 @@ public class MeleeAttack : MonoBehaviour
         // TODO spawn hit animation
         // TODO perform lerp
 
-        StartCoroutine(MoveAttackPos());
+        StartCoroutine(Lunge());
+        //StartCoroutine(MoveAttackPos());
     }
     public void CompleteAttack()
     {
@@ -87,16 +102,7 @@ public class MeleeAttack : MonoBehaviour
         FollowThrough();
     }
 
-    IEnumerator LerpTowardsTarget(Vector3 start, Vector3 end, float speed, float duration)
-    {
-        float t = 0;
-        while(t < duration)
-        {
-            transform.position = Vector3.Lerp(start, end, t / duration );
-            t += Time.deltaTime * speed;
-            yield return null;
-        }
-    }
+    
 
     IEnumerator MoveAttackPos()
     {
@@ -106,10 +112,11 @@ public class MeleeAttack : MonoBehaviour
         // we want to move to the target but stop just a bit before him
         Vector3 dirToTarget = (targetPosition - transform.position).normalized;
         Vector3 attackPosition = targetPosition - dirToTarget * (myCollisionRadius + targetCollisionRadius + attackThreshold);
-        
-        StartCoroutine(LerpTowardsTarget(originalPosition, attackPosition, 1, attackDuration));
-        yield return new WaitForSeconds(0.3f);
 
+
+        yield return StartCoroutine(LerpTowardsTarget(originalPosition, attackPosition, 1, attackDuration));
+        
+        yield return new WaitForSeconds(attackDuration);
         StartCoroutine(Lunge());
     }
 
@@ -117,21 +124,37 @@ public class MeleeAttack : MonoBehaviour
     IEnumerator Lunge()
     {
         Vector3 startPos = transform.position;
-        Vector3 attackPos = targetPosition;
-        float attackSpeed = 3f;
+        Vector3 attackPos = targetPosition;    
+        // we want to move to the target but stop just a bit before him
+        Vector3 dirToTarget = (attackPos - transform.position).normalized;
+        Vector3 attackPosition = attackPos - dirToTarget * (myCollisionRadius + targetCollisionRadius + attackThreshold);
+
         float percent = 0;
 
-        while(percent <= 1)
+        while (percent <= 1)
         {
             percent += Time.deltaTime * attackSpeed;
             // this interpolates from 0 to 1 and then back from 1 to 0
             float interpolate = (-percent * percent + percent) * 4;
-            transform.position = Vector3.Lerp(startPos, attackPos, interpolate);
+            transform.position = Vector3.Lerp(startPos, attackPosition, interpolate);
             yield return null;
         }
 
         yield return new WaitForSeconds(exitDuration);
         CompleteAttack();
+    }
+
+
+    // utility to move towards our target --- REUSABLE CODE
+    IEnumerator LerpTowardsTarget(Vector3 start, Vector3 end, float speed, float duration)
+    {
+        float t = 0;
+        while (t < duration)
+        {
+            transform.position = Vector3.Lerp(start, end, t / duration);
+            t += Time.deltaTime * speed;
+            yield return null;
+        }
     }
 }
 

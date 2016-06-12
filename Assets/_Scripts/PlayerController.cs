@@ -36,7 +36,10 @@ public class PlayerController : MonoBehaviour
     {
         target = game.currentEnemy;
 
-        if (target != null)
+        // TODO we should still be able to attack when the enemy is attacking 
+        // but only while he is still in anticipation mode
+        // if he is in followthrough mode we are out of luck 
+        if (target != null && !target.basicAttack.isAttacking && !player.Dead())
         {
 
             player.OnAttackStart();
