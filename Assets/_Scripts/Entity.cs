@@ -4,11 +4,13 @@ using System;
 
 public class Entity : MonoBehaviour
 {
+    public string myName = "entity";
     public bool isDead = false;
     public float health;
     private float maxHealth;
 
     public float damage = 1;
+    private bool hasDealtDamage = false;
 
     public Action OnAttackStart;
     public Action OnAttackFinish;
@@ -25,7 +27,7 @@ public class Entity : MonoBehaviour
     Entity target;
     public float attackTimer = 0;
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         maxHealth = health;
         basicAttack = GetComponent<MeleeAttack>();
@@ -33,6 +35,7 @@ public class Entity : MonoBehaviour
         if (basicAttack != null)
         {
             basicAttack.OnAttackFinish += OnAttackComplete;
+            basicAttack.OnDealDamage += DealDamageToTarget;
         }
     }
 
@@ -46,6 +49,94 @@ public class Entity : MonoBehaviour
         }
 
     }
+
+
+    public void DealDamage(Entity target, float dmg)
+    {
+        // do not deal damage if we already dealt damage this frame
+       
+        if (hasDealtDamage) return;
+
+        if (target.Dead())
+        {
+            basicAttack.isAttacking = false;
+            hasDealtDamage = false;
+        }
+
+        if (target != null && !target.Dead())
+        {
+            target.TakeDamage(dmg);
+            hasDealtDamage = true;
+            Debug.Log("target took " + dmg);
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+    }
+
+    public bool Dead()
+    {
+        return health <= 0;
+    }
+
+    // if we use an object pooler we can use this function to reset our entities
+    public void Reset()
+    {
+        health = maxHealth;
+        isDead = false;
+
+        if (OnAttackFinish != null)
+        {
+            Debug.Log("dood");
+            OnAttackFinish();
+        }
+    }
+
+
+    //========================================================================================
+    //
+    // THIS IS WHERE WE HAVE ATTACK METHODS
+    //
+    //========================================================================================
+
+    private void OnAttackComplete()
+    {
+
+        hasDealtDamage = false;
+        // this is used for UI stuff
+        if (OnAttackFinish != null)
+        {
+            Debug.Log("dood");
+            OnAttackFinish();
+        }
+    }
+
+    private void DealDamageToTarget()
+    {
+        DealDamage(target, damage);
+    }
+
+    public void PerformBasicAttack(Entity _target)
+    {
+        target = _target;
+        
+        if (target != null)
+        {
+
+            if (OnAttackStart != null)
+            {
+                OnAttackStart();
+            }
+
+            // set the target's position
+            basicAttack.SetTarget(target.gameObject);
+            basicAttack.SetTargetPosition(target.transform.position);
+            basicAttack.Anticipation();
+        }
+    }
+
 
     public void UpdateAttackTimer()
     {
@@ -82,63 +173,4 @@ public class Entity : MonoBehaviour
         //}
 
     }
-
-    public void DealDamage(Entity target, float dmg)
-    {
-        if (target != null && !target.Dead())
-        {
-            target.TakeDamage(dmg);
-            Debug.Log("target took " + dmg);
-        }
-    }
-
-    public void TakeDamage(float damage)
-    {
-        health -= damage;
-    }
-
-    public bool Dead()
-    {
-        return health <= 0;
-    }
-
-    // if we use an object pooler we can use this function to reset our entities
-    public void Reset()
-    {
-        health = maxHealth;
-        isDead = false;
-    }
-
-    private void OnAttackComplete()
-    {
-
-        if (OnAttackFinish != null)
-        {
-            OnAttackFinish();
-            Debug.Log("attack complete");
-            attackReady = false;
-        }
-    }
-
-
-    public void PerformBasicAttack(Entity _target)
-    {
-        target = _target;
-
-        if (target != null)
-        {
-
-            if (OnAttackStart != null)
-            {
-                OnAttackStart();
-            }
-
-            // set the target's position
-            basicAttack.SetTarget(target.gameObject);
-            basicAttack.SetTargetPosition(target.transform.position);
-            basicAttack.Anticipation();
-            // player.DealDamage(target, player.damage);
-        }
-    }
-
 }

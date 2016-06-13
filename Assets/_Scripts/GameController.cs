@@ -5,6 +5,8 @@ public class GameController : MonoBehaviour
 {
     StateMachine gameStateMachine;
 
+    public Fade screenFader;
+
     public GameUserInterface userInterFace;
     public GameObject dungeonMapContainer; // container of our dungeon map "scene"
     public GameObject battleSceneContainer; // container of our battle scene
@@ -14,7 +16,8 @@ public class GameController : MonoBehaviour
     // right now we will instantiate an enemy in BattleScene and pass it to this value
     public Entity currentEnemy;
 
-    public GameObject[] Enemies;
+    public GameObject[] Enemies; // these are the enemy design prefabs 
+
     // Use this for initialization
     void Awake()
     {
@@ -22,6 +25,8 @@ public class GameController : MonoBehaviour
         userInterFace = gameObject.GetComponent<GameUserInterface>();
 
         playerController = FindObjectOfType<PlayerController>();
+
+        screenFader = gameObject.GetComponent<Fade>();
     }
 
     void Start()
@@ -73,12 +78,15 @@ public class GameController : MonoBehaviour
     public void PlayGameButton()
     {
         Debug.Log("PRESSED PLAY GAME");
-        GoToOverWorld();
+
+        screenFader.FadeToggle(GoToOverWorld);
+        
     }
 
     public void GoToOverWorld()
     {
         ChangeState("GameOverWorld");
+        screenFader.FadeToggle();
     }
 
     public void GoToDungeonMapButton()
@@ -88,6 +96,13 @@ public class GameController : MonoBehaviour
         // load level data from what dungeon was clicked?
 
         Debug.Log("PRESSED DUNGEON MAP");
+        screenFader.FadeToggle(EnterDungeonMapButton);
+    }
+
+    public void EnterDungeonMapButton()
+    {
+
         ChangeState("GameDungeonMap");
+        screenFader.FadeToggle();
     }
 }

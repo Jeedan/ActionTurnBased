@@ -34,6 +34,8 @@ public class GameOverWorldState : IState
 
     public void OnUpdate()
     {
-        Debug.Log("OnUpdate: Game OverWorld");
+        if (game.screenFader.inProgress) return;
+
+        //Debug.Log("OnUpdate: Game OverWorld");
     }
 }

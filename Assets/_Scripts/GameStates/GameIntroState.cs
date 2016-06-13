@@ -10,8 +10,8 @@ using System;
 /// </summary>
 public class GameIntroState : IState
 {
-    GameController gameController;
-    
+    GameController game;
+
     public GameIntroState()
     {
 
@@ -19,27 +19,41 @@ public class GameIntroState : IState
 
     public GameIntroState(GameObject go)
     {
-        gameController = go.GetComponent<GameController>();
+        game = go.GetComponent<GameController>();
     }
 
     public void OnEnter()
     {
-        gameController.userInterFace.titleScreenGO.SetActive(true);
+        game.userInterFace.titleScreenGO.SetActive(true);
         Debug.Log("OnEnter: Game Intro");
+
+        // fade to clear
+        game.screenFader.FadeToggle();
     }
 
     public void OnExit()
     {
-        gameController.userInterFace.titleScreenGO.SetActive(false);
+        game.userInterFace.titleScreenGO.SetActive(false);
         Debug.Log("OnExit: Game Intro");
+        // fade to clear
     }
 
     public void OnUpdate()
     {
+        // we wait for the screen to fade before doing anything
+        if (game.screenFader.inProgress) return;
+
         if (Input.anyKeyDown)
         {
-            gameController.ChangeState("GameMainMenu");
+            game.screenFader.FadeToggle(GoToMainMenu);
         }
-      //  Debug.Log("OnUpdate: Game Intro");
+        //  Debug.Log("OnUpdate: Game Intro");
+    }
+
+    void GoToMainMenu()
+    {
+        game.ChangeState("GameMainMenu");
+        // fade to clear
+        game.screenFader.FadeToggle();
     }
 }

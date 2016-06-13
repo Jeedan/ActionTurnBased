@@ -36,33 +36,35 @@ public class GameDungeonMapState : IState
 
     public void OnUpdate()
     {
+        // we wait for the screen to fade before doing anything
+        if (game.screenFader.inProgress) return;
 
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("OnUpdate: Game DungeonMap");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
             if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
             {
+
+                Debug.Log("OnUpdate: Game DungeonMap");
+                // if we clicked on a dungeon icon set it as our gameobject
                 GameObject dungeon = hitInfo.transform.gameObject;
-                DungeonInfo dungeonInfo = dungeon.GetComponent<DungeonInfo>();
                 if (dungeon.tag.Equals("Dungeon"))
                 {
+                    // get the dungeon info from the clicked icon
+                    DungeonInfo dungeonInfo = dungeon.GetComponent<DungeonInfo>();
 
                     Debug.Log(dungeonInfo.dungeonName);
 
                     // TODO battle state test
                     IState BattleState = new GameBattleControllerState(game.gameObject, dungeonInfo);
                     game.AddState("BattleScene", BattleState);
-
-                    game.ChangeState("BattleScene");
-                    // TODO: change state to a dungeon
+                    
                     // dungeon will be only combat
                     // will be handled in battleController
                     // pass DungeonInfo via constructor
-                    // create a battle state and we pass the battleState
-                    // to gameController's stack of states
-                    // on end of battle we will save all our information and pop the state
+                    game.screenFader.FadeToggle(FadeAndGoToBattleScene);
+                  
                 }
             }
         }
@@ -70,7 +72,15 @@ public class GameDungeonMapState : IState
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             // take us back to the overworld
-            game.GoToOverWorld();
+            game.PlayGameButton();
         }
+    }
+
+
+    void FadeAndGoToBattleScene()
+    {
+
+        game.ChangeState("BattleScene");
+        game.screenFader.FadeToggle();
     }
 }

@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         player = GetComponent<Entity>();
+        player.myName = "Player";
         game = FindObjectOfType<GameController>();
     }
     
@@ -42,11 +43,12 @@ public class PlayerController : MonoBehaviour
         if (target != null && !target.basicAttack.isAttacking && !player.Dead())
         {
 
-            player.OnAttackStart();
-            // set the target's position
-            player.basicAttack.SetTarget(target.gameObject);
-            player.basicAttack.SetTargetPosition(target.transform.position);
-            player.basicAttack.Anticipation();
+            player.PerformBasicAttack(target);
+            //player.OnAttackStart();
+            //// set the target's position
+            //player.basicAttack.SetTarget(target.gameObject);
+            //player.basicAttack.SetTargetPosition(target.transform.position);
+            //player.basicAttack.Anticipation();
            // player.DealDamage(target, player.damage);
             
         }

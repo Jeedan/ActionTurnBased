@@ -36,8 +36,17 @@ public class GameBattleControllerState : IState
         game.battleSceneContainer.SetActive(true);
         game.userInterFace.battleGUIGO.SetActive(true);
 
+        // fade out from black to clear
+        game.screenFader.InitFadeOut();
+
         InitEnemySpawn();
         player = game.playerController.gameObject.GetComponent<Entity>();
+
+        if (!player.gameObject.activeInHierarchy)
+        {
+            player.gameObject.SetActive(true);
+            player.Reset();
+        }
         enemy = game.currentEnemy;
         Debug.Log("Dungeon Info: " + dungeonInfo.dungeonName + " minLVL " + dungeonInfo.minLevel + " maxLVL " + dungeonInfo.maxLevel);
     }
@@ -59,15 +68,13 @@ public class GameBattleControllerState : IState
         game.battleSceneContainer.SetActive(false);
         game.userInterFace.battleGUIGO.SetActive(false);
         Debug.Log("OnExit: Game Battle");
+        
     }
 
     public void OnUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            game.PopState("BattleScene");
-            // game.ChangeState("GameDungeonMap");
-        }
+        // we wait for the screen to fade before doing anything
+        if (game.screenFader.inProgress) return;
 
         if (!player.basicAttack.isAttacking)
         {
@@ -76,26 +83,35 @@ public class GameBattleControllerState : IState
             enemy.UpdateAttackTimer();
             if (!enemy.basicAttack.isAttacking && enemy.attackReady)
             {
-
-                //TODO look at the enemy attack animation
-                // try to seperate the code into its own file to see what could be the problem
                 Debug.Log("Enemy about to attack");
                 enemy.PerformBasicAttack(player);
 
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            game.screenFader.FadeToggle(ExitBattle);
+            // game.ChangeState("GameDungeonMap");
+        }
 
+        // TODO temporary win and defeat condition
         if (player.Dead())
         {
             Debug.Log("Game Over player died");
-            game.PopState("BattleScene");
+            game.screenFader.FadeToggle(ExitBattle);
         }
-        else if (enemy.Dead())
+        else if (enemy.Dead() && !player.basicAttack.isAttacking)
         {
             Debug.Log("Victory you defeated this very tough enemy lets go");
-            game.PopState("BattleScene");
+            game.screenFader.FadeToggle(ExitBattle);
         }
         //Debug.Log("OnUpdate: Game Battle ");
+    }
+
+    void ExitBattle()
+    {
+        game.screenFader.FadeToggle();
+        game.PopState("BattleScene");
     }
 }
