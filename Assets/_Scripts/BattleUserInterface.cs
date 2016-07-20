@@ -34,8 +34,8 @@ public class BattleUserInterface : MonoBehaviour
         InitializeButtonListeners(dodgeButton, player.DodgeButton);
 
 
-        player.GetPlayerEntity().OnAttackStart += OnPlayerAttack;
-        player.GetPlayerEntity().OnAttackFinish += OnPlayerAttackFinish;
+        player.GetPlayerEntity().basicAttack.OnAttackStart += OnPlayerAttack;
+        player.GetPlayerEntity().basicAttack.OnAttackFinish += OnPlayerAttackFinish;
     }
 
     private void InitializeButtonListeners(Button btn, UnityAction listener)

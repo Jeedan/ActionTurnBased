@@ -17,6 +17,10 @@ public class GameController : MonoBehaviour
     public Entity currentEnemy;
 
     public GameObject[] Enemies; // these are the enemy design prefabs 
+    public DungeonInfo[] dungeons; // the levels
+
+    public DungeonInfo currentDungeon;
+
 
     // Use this for initialization
     void Awake()

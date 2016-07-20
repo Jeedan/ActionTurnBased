@@ -20,7 +20,7 @@ public class GameDungeonMapState : IState
     {
         // set the camera to orthographic 
         //as the map will be a 2D image with 2D images for the dungoen icons
-        Camera.main.orthographic = true;
+       // Camera.main.orthographic = true;
         game.dungeonMapContainer.SetActive(true);
         Debug.Log("OnEnter: Game DungeonMap");
     }
@@ -29,7 +29,7 @@ public class GameDungeonMapState : IState
     {
         // set the camera to be perspective again when we leave to a battle 
         // as the battle will be a 3D scene
-        Camera.main.orthographic = false;
+       // Camera.main.orthographic = false;
         game.dungeonMapContainer.SetActive(false);
         Debug.Log("OnExit: Game DungeonMap");
     }
@@ -57,14 +57,17 @@ public class GameDungeonMapState : IState
                     Debug.Log(dungeonInfo.dungeonName);
 
                     // TODO battle state test
-                    IState BattleState = new GameBattleControllerState(game.gameObject, dungeonInfo);
-                    game.AddState("BattleScene", BattleState);
-                    
-                    // dungeon will be only combat
-                    // will be handled in battleController
-                    // pass DungeonInfo via constructor
-                    game.screenFader.FadeToggle(FadeAndGoToBattleScene);
-                  
+                    if (dungeonInfo.unlocked == true)
+                    {
+                        game.currentDungeon = dungeonInfo;
+                        IState BattleState = new GameBattleControllerState(game.gameObject, dungeonInfo);
+                        game.AddState("BattleScene", BattleState);
+
+                        // dungeon will be only combat
+                        // will be handled in battleController
+                        // pass DungeonInfo via constructor
+                        game.screenFader.FadeToggle(FadeAndGoToBattleScene);
+                    }
                 }
             }
         }

@@ -8,12 +8,13 @@ public class MeleeAttack : MonoBehaviour
     private Vector3 targetPosition;
     private GameObject target;
 
-    public float moveSpeed = 1.0f;
-    public float returnSpeed = 3.0f;
+    private float attackDuration = 0.5f; // currently unused
+    private float moveSpeed = 1.0f; // currently unused
+
+    private float returnSpeed = 1.0f;
     public float attackSpeed = 1.5f;
 
     public float anticiapationDuration = 0.5f;
-    public float attackDuration = 0.5f;
     public float exitDuration = 0.5f;
 
     public bool isAttacking = false;
@@ -21,11 +22,12 @@ public class MeleeAttack : MonoBehaviour
 
     // collision radius
     // we get the collision radius from the capsule collider that is placed on the characters
-    public float attackThreshold = 0.25f;
+    private float attackThreshold = 0.25f;
     float myCollisionRadius;
     float targetCollisionRadius;
 
 
+    public Action OnAttackStart;
     public Action OnDealDamage;
     public Action OnAttackFinish;
     public Action OnPlayAnticipation;
@@ -49,9 +51,9 @@ public class MeleeAttack : MonoBehaviour
 
     void PlayAnticipationAnimation()
     {
-        if (OnPlayAnticipation != null)
+        if (OnAttackStart != null)
         {
-            OnPlayAnticipation(); // event for animations and other effects
+            OnAttackStart(); // event for animations and other effects
         }
 
     }
@@ -90,21 +92,6 @@ public class MeleeAttack : MonoBehaviour
         FollowThrough();
     }
 
-    IEnumerator MoveAttackPos()
-    {
-        targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
-
-        Vector3 startPosition = originalPosition;
-        // we want to move to the target but stop just a bit before him
-        Vector3 dirToTarget = (targetPosition - transform.position).normalized;
-        Vector3 attackPosition = targetPosition - dirToTarget * (myCollisionRadius + targetCollisionRadius + attackThreshold);
-
-
-        yield return StartCoroutine(LerpTowardsTarget(originalPosition, attackPosition, 1, attackDuration));
-
-        yield return new WaitForSeconds(attackDuration);
-        StartCoroutine(Lunge());
-    }
 
     // lunge at target and then reset to the original position
     IEnumerator Lunge()
@@ -116,26 +103,24 @@ public class MeleeAttack : MonoBehaviour
         Vector3 attackPosition = attackPos - dirToTarget * (myCollisionRadius + targetCollisionRadius + attackThreshold);
 
         float percent = 0;
-
         while (percent <= 1)
         {
             percent += Time.deltaTime * attackSpeed;
             // this interpolates from 0 to 1 and then back from 1 to 0
             float interpolate = (-percent * percent + percent) * 4;
             transform.position = Vector3.Lerp(startPos, attackPosition, interpolate);
-
-            if(interpolate >= 0.95f)
+          
+            if (interpolate >= 0.95f)
             {
-             //   Debug.Log("lunged" + interpolate);
-                if (OnDealDamage != null)
-                {
-                    OnDealDamage();
-                }
+                //Vector3 targetPos = new Vector3(-7.91f, 1.57f, 1f);
+                //   Debug.Log("lunged" + interpolate);
+                //OVERLAP SPHERE FOR DAMAGE
+                CheckForTarget(targetPosition);
             }
-            
+
             yield return null;
         }
-        
+
 
         yield return new WaitForSeconds(exitDuration);
         CompleteAttack();
@@ -166,6 +151,41 @@ public class MeleeAttack : MonoBehaviour
             transform.position = Vector3.Lerp(start, end, t / duration);
             t += Time.deltaTime * speed;
             yield return null;
+        }
+    }
+
+
+    IEnumerator MoveAttackPos()
+    {
+        targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+
+        Vector3 startPosition = originalPosition;
+        // we want to move to the target but stop just a bit before him
+        Vector3 dirToTarget = (targetPosition - transform.position).normalized;
+        Vector3 attackPosition = targetPosition - dirToTarget * (myCollisionRadius + targetCollisionRadius + attackThreshold);
+
+
+        yield return StartCoroutine(LerpTowardsTarget(originalPosition, attackPosition, 1, attackDuration));
+
+        yield return new WaitForSeconds(attackDuration);
+        StartCoroutine(Lunge());
+    }
+
+    void CheckForTarget(Vector3 targetPosition)
+    {
+        Collider[] targetCollider = Physics.OverlapSphere(targetPosition, targetCollisionRadius * 0.7f);
+
+        for (int i = 0; i < targetCollider.Length; ++i)
+        {
+            Entity ent = targetCollider[i].GetComponent<Entity>();
+
+            if (ent != null )//&& ent.myName.Equals("Player"))
+            {
+                if (OnDealDamage != null)
+                {
+                    OnDealDamage();
+                }
+            }
         }
     }
 }

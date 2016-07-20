@@ -1,6 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+enum BattleStates
+{
+    INTRO,
+    IDLE,
+    PAUSED,
+    ACTION,
+    VICTORY,
+    DEFEAT
+};
+
+
 public class GameBattleControllerState : IState
 {
     GameController game;
@@ -11,8 +22,12 @@ public class GameBattleControllerState : IState
 
     GameObject enemyGO;
     Entity enemy;
+
+    BasicEnemy basicEnemy;
+
     Entity player;
 
+    BattleStates currentBattleState;
 
     public GameBattleControllerState()
     {
@@ -33,6 +48,8 @@ public class GameBattleControllerState : IState
     public void OnEnter()
     {
         Debug.Log("OnEnter: Game Battle");
+        currentBattleState = BattleStates.INTRO;
+
         game.battleSceneContainer.SetActive(true);
         game.userInterFace.battleGUIGO.SetActive(true);
 
@@ -48,6 +65,7 @@ public class GameBattleControllerState : IState
             player.Reset();
         }
         enemy = game.currentEnemy;
+        basicEnemy = enemy.gameObject.GetComponent<BasicEnemy>();
         Debug.Log("Dungeon Info: " + dungeonInfo.dungeonName + " minLVL " + dungeonInfo.minLevel + " maxLVL " + dungeonInfo.maxLevel);
     }
 
@@ -68,7 +86,7 @@ public class GameBattleControllerState : IState
         game.battleSceneContainer.SetActive(false);
         game.userInterFace.battleGUIGO.SetActive(false);
         Debug.Log("OnExit: Game Battle");
-        
+
     }
 
     public void OnUpdate()
@@ -76,18 +94,7 @@ public class GameBattleControllerState : IState
         // we wait for the screen to fade before doing anything
         if (game.screenFader.inProgress) return;
 
-        if (!player.basicAttack.isAttacking)
-        {
-            // todo clean up this attack timer
-            // TODO entities need states to tell what part of their ability they are currently in
-            enemy.UpdateAttackTimer();
-            if (!enemy.basicAttack.isAttacking && enemy.attackReady)
-            {
-                Debug.Log("Enemy about to attack");
-                enemy.PerformBasicAttack(player);
-
-            }
-        }
+        EnemyAttack();
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -105,8 +112,28 @@ public class GameBattleControllerState : IState
         {
             Debug.Log("Victory you defeated this very tough enemy lets go");
             game.screenFader.FadeToggle(ExitBattle);
+            // TODO CHANGE VICTORY STATE
+            if (game.currentDungeon.nextDungeon != null)
+            {
+                game.currentDungeon.nextDungeon.unlocked = true;
+            }
         }
         //Debug.Log("OnUpdate: Game Battle ");
+    }
+
+    void EnemyAttack()
+    {
+        if (!player.basicAttack.isAttacking)
+        {
+            // todo clean up this attack timer
+            // TODO entities need states to tell what part of their ability they are currently in
+            basicEnemy.UpdateAttackTimer();
+
+            if (!enemy.basicAttack.isAttacking && basicEnemy.attackReady)
+            {
+                enemy.PerformBasicAttack(player);
+            }
+        }
     }
 
     void ExitBattle()

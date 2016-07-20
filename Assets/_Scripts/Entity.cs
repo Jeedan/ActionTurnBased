@@ -12,20 +12,19 @@ public class Entity : MonoBehaviour
     public float damage = 1;
     private bool hasDealtDamage = false;
 
-    public Action OnAttackStart;
-    public Action OnAttackFinish;
-
+    // events
+    //public Action OnAttackStart;
+    //public Action OnAttackFinish;
+    
     public MeleeAttack basicAttack;
 
+    //Battle position
+    public Vector3 battlePosition;
 
 
-    // TODO very simple attack test
-    public bool attackReady = false;
-    public float timeBetweenAttacks = 3.0f;
-    private float nextAttack = 0;
 
     Entity target;
-    public float attackTimer = 0;
+
     // Use this for initialization
     void Awake()
     {
@@ -37,6 +36,12 @@ public class Entity : MonoBehaviour
             basicAttack.OnAttackFinish += OnAttackComplete;
             basicAttack.OnDealDamage += DealDamageToTarget;
         }
+    }
+
+    void Start()
+    {
+
+        battlePosition = transform.parent.transform.position;
     }
 
     // Update is called once per frame
@@ -54,7 +59,7 @@ public class Entity : MonoBehaviour
     public void DealDamage(Entity target, float dmg)
     {
         // do not deal damage if we already dealt damage this frame
-       
+
         if (hasDealtDamage) return;
 
         if (target.Dead())
@@ -87,11 +92,11 @@ public class Entity : MonoBehaviour
         health = maxHealth;
         isDead = false;
 
-        if (OnAttackFinish != null)
-        {
-            Debug.Log("dood");
-            OnAttackFinish();
-        }
+        //if (OnAttackFinish != null)
+        //{
+        //    Debug.Log("dood");
+        //    OnAttackFinish();
+        //}
     }
 
 
@@ -106,11 +111,6 @@ public class Entity : MonoBehaviour
 
         hasDealtDamage = false;
         // this is used for UI stuff
-        if (OnAttackFinish != null)
-        {
-            Debug.Log("dood");
-            OnAttackFinish();
-        }
     }
 
     private void DealDamageToTarget()
@@ -121,56 +121,14 @@ public class Entity : MonoBehaviour
     public void PerformBasicAttack(Entity _target)
     {
         target = _target;
-        
-        if (target != null)
+
+
+        if (target != null && !target.basicAttack.isAttacking && !Dead())
         {
-
-            if (OnAttackStart != null)
-            {
-                OnAttackStart();
-            }
-
             // set the target's position
             basicAttack.SetTarget(target.gameObject);
-            basicAttack.SetTargetPosition(target.transform.position);
+            basicAttack.SetTargetPosition(target.battlePosition);
             basicAttack.Anticipation();
         }
-    }
-
-
-    public void UpdateAttackTimer()
-    {
-        // TODO update the attack timer
-        // attack timer should start at 0
-        // it should charge up over time
-        // attackTimer starts at 0
-        // attackTimer += Time.DeltaTime;
-        // when it has reached readyTime
-        // 
-        if (!basicAttack.isAttacking)
-        {
-
-            if (attackTimer < timeBetweenAttacks)
-            {
-                attackTimer += Time.deltaTime;
-                attackReady = false;
-                // Debug.Log("enemy attackTimer " + attackTimer);
-            }
-
-            else if (attackTimer >= timeBetweenAttacks)
-            {
-                attackReady = true;
-                attackTimer = 0;
-
-                Debug.Log("enemy attackReady ");
-            }
-        }
-
-        //if(Time.time > nextAttack)
-        //{
-        //    attackReady = true;
-        //    nextAttack = Time.time + timeBetweenAttacks;
-        //}
-
     }
 }

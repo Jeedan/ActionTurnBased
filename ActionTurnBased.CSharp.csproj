@@ -63,13 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Fade.cs" />
-    <Compile Include="Assets\ScreenShake.cs" />
     <Compile Include="Assets\_Scripts\Abilities\MeleeAttack.cs" />
     <Compile Include="Assets\_Scripts\BasicEnemy.cs" />
     <Compile Include="Assets\_Scripts\BattleUserInterface.cs" />
     <Compile Include="Assets\_Scripts\Dungeons\DungeonInfo.cs" />
     <Compile Include="Assets\_Scripts\Entity.cs" />
+    <Compile Include="Assets\_Scripts\Fade.cs" />
     <Compile Include="Assets\_Scripts\GameController.cs" />
     <Compile Include="Assets\_Scripts\GameStates\GameBattleControllerState.cs" />
     <Compile Include="Assets\_Scripts\GameStates\GameDungeonMapState.cs" />
@@ -78,6 +77,7 @@
     <Compile Include="Assets\_Scripts\GameStates\GameOverWorldState.cs" />
     <Compile Include="Assets\_Scripts\GameUserInterface.cs" />
     <Compile Include="Assets\_Scripts\PlayerController.cs" />
+    <Compile Include="Assets\_Scripts\ScreenShake.cs" />
     <Compile Include="Assets\_Scripts\StateMachine\IState.cs" />
     <Compile Include="Assets\_Scripts\StateMachine\StateMachine.cs" />
   </ItemGroup>
