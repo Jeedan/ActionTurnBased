@@ -23,6 +23,8 @@ public class GameBattleControllerState : IState
     GameObject enemyGO;
     Entity enemy;
 
+    PlayerController playerController;
+
     BasicEnemy basicEnemy;
 
     Entity player;
@@ -57,21 +59,40 @@ public class GameBattleControllerState : IState
         game.screenFader.InitFadeOut();
 
         InitEnemySpawn();
-        player = game.playerController.gameObject.GetComponent<Entity>();
+        player = game.playerController.gameObject.GetComponent<PlayerController>();
 
         if (!player.gameObject.activeInHierarchy)
         {
             player.gameObject.SetActive(true);
             player.Reset();
         }
+
+
+        playerController = player as PlayerController;
         enemy = game.currentEnemy;
+        enemy.gameObject.SetActive(true);
         basicEnemy = enemy.gameObject.GetComponent<BasicEnemy>();
         Debug.Log("Dungeon Info: " + dungeonInfo.dungeonName + " minLVL " + dungeonInfo.minLevel + " maxLVL " + dungeonInfo.maxLevel);
     }
 
     void InitEnemySpawn()
     {
-        enemyGO = Object.Instantiate(game.Enemies[0]) as GameObject;
+        // TODO try and get a better randomizer
+        var currDungeonLevel = dungeonInfo.dungeonLevel;
+        var enemyPrefabChoiceIndex = 0;
+
+        if (currDungeonLevel >= dungeonInfo.Enemies.Length)
+        {
+            Debug.Log("test hello ?");
+            enemyPrefabChoiceIndex = Random.Range(0, dungeonInfo.Enemies.Length);
+        }
+        else
+        {
+            Debug.Log("random index");
+            enemyPrefabChoiceIndex = 0;
+        }
+
+        enemyGO = Object.Instantiate(dungeonInfo.Enemies[enemyPrefabChoiceIndex]) as GameObject;
         enemySpawn = GameObject.Find("_EnemyPosition").transform;
         enemyGO.transform.SetParent(enemySpawn);
         enemyGO.transform.position = enemySpawn.position;
@@ -96,7 +117,12 @@ public class GameBattleControllerState : IState
 
         EnemyAttack();
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!player.basicAttack.isAttacking)
+        {
+            playerController.HandleInput();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) && !player.basicAttack.isAttacking)
         {
             game.screenFader.FadeToggle(ExitBattle);
             // game.ChangeState("GameDungeonMap");
@@ -127,11 +153,13 @@ public class GameBattleControllerState : IState
         {
             // todo clean up this attack timer
             // TODO entities need states to tell what part of their ability they are currently in
+           // BasicEnemy basicEnemy = enemy as BasicEnemy;
             basicEnemy.UpdateAttackTimer();
 
-            if (!enemy.basicAttack.isAttacking && basicEnemy.attackReady)
+            if (!basicEnemy.basicAttack.isAttacking && basicEnemy.attackReady)
             {
-                enemy.PerformBasicAttack(player);
+                basicEnemy.PickRandomMove();
+                basicEnemy.PerformBasicAttack(player);
             }
         }
     }

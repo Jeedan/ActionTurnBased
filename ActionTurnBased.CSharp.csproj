@@ -63,6 +63,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\_Scripts\Abilities\Abilities.cs" />
+    <Compile Include="Assets\_Scripts\Abilities\DiagonalAttacks.cs" />
+    <Compile Include="Assets\_Scripts\Abilities\IAbility.cs" />
     <Compile Include="Assets\_Scripts\Abilities\MeleeAttack.cs" />
     <Compile Include="Assets\_Scripts\BasicEnemy.cs" />
     <Compile Include="Assets\_Scripts\BattleUserInterface.cs" />
@@ -80,6 +83,7 @@
     <Compile Include="Assets\_Scripts\ScreenShake.cs" />
     <Compile Include="Assets\_Scripts\StateMachine\IState.cs" />
     <Compile Include="Assets\_Scripts\StateMachine\StateMachine.cs" />
+    <Compile Include="Assets\_Scripts\TweenUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

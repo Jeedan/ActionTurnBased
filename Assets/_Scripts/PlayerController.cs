@@ -3,25 +3,77 @@ using System.Collections;
 using UnityEngine.Events;
 using System;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Entity
 {
     GameController game;
-    private Entity player;
 
-    Entity target;
+    //private Entity player;
+
+    // public Entity targetTEST;
+
+    public Action OnDodgeStart;
+    public Action OnDodgeEnd;
 
     public float dodgeSpeed = 2.0f;
-    // Use this for initialization
-    void Start()
-    {
-        player = GetComponent<Entity>();
-        player.myName = "Player";
-        game = FindObjectOfType<GameController>();
-    }
+    public float dodgeDistance = 4.0f;
+
     
-    // Update is called once per frame
-    void Update()
+
+    protected override void Awake()
     {
+        base.Awake();
+    }
+
+    // Use this for initialization
+    protected override void Start()
+    {
+        base.Start();
+        //player = GetComponent<Entity>();
+        //player.myName = "Player";
+        myName = "Player";
+        game = FindObjectOfType<GameController>();
+        theSprite = GetComponentInChildren<Renderer>();
+        origColor = theSprite.material.color;
+    }
+
+    // Update is called once per frame
+    protected override void Update()
+    {
+        base.Update();
+
+        
+    }
+
+    public void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            DodgeButtonUp();
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            DodgeButtonLeft();
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            DodgeButtonDown();
+        }
+    }
+
+    public override void Reset()
+    {
+        base.Reset();
+
+        if (OnDodgeEnd != null)
+        {
+            OnDodgeEnd();
+        }
+        theSprite.material.color = origColor;
+
+        transform.position = battlePosition;
+
     }
 
     public void AttackButton()
@@ -29,14 +81,26 @@ public class PlayerController : MonoBehaviour
         Attack();
     }
 
-    public void DodgeButton()
+    public void DodgeButtonUp()
     {
-        Dodge();
+        Dodge(Vector3.up);
+    }
+
+    public void DodgeButtonLeft()
+    {
+        Dodge(Vector3.left);
+    }
+
+    public void DodgeButtonDown()
+    {
+        Dodge(Vector3.down);
     }
 
     public void Attack()
     {
+        //targetTEST = game.currentEnemy;
         target = game.currentEnemy;
+        //target = targetTEST;
 
         // TODO we should still be able to attack when the enemy is attacking 
         // but only while he is still in anticipation mode
@@ -44,36 +108,85 @@ public class PlayerController : MonoBehaviour
         if (target != null) //&& !target.basicAttack.isAttacking && !player.Dead())
         {
 
-            player.PerformBasicAttack(target);
-            
+            //player.PerformBasicAttack(target);
+            PerformBasicAttack(target);
+
         }
     }
 
-    public void Dodge()
+    private void Dodge(Vector3 direction)
     {
         Debug.Log("Dodged enemy attack!");
-        StartCoroutine(DodgeUp());
+        StartCoroutine(DodgeTo(direction));
     }
 
     public Entity GetPlayerEntity()
     {
-        return player;
+        return this;
+    }
+
+    public override void TakeDamage(float damage)
+    {
+        base.TakeDamage(damage);
+        StartCoroutine(Flash());
     }
 
     // lunge at target and then reset to the original position
-    IEnumerator DodgeUp()
+    IEnumerator DodgeTo(Vector3 direction)
     {
-        Vector3 startPos = transform.position;
-        Vector3 dodgePos = transform.position + (transform.up * 3f);
-
-        float percent = 0;
-        while (percent <= 1)
+        if(transform.position != battlePosition)
         {
-            percent += Time.deltaTime * dodgeSpeed;
-            // this interpolates from 0 to 1 and then back from 1 to 0
-            float interpolate = (-percent * percent + percent) * 4;
-            transform.position = Vector3.Lerp(startPos, dodgePos, interpolate);
-            yield return null;
+            yield break;
         }
+
+        if (OnDodgeStart != null)
+        {
+            OnDodgeStart();
+        }
+
+        yield return TweenUtil.PingPong(direction, dodgeDistance, dodgeSpeed, transform);
+
+        if (OnDodgeEnd != null)
+        {
+            transform.position = battlePosition;
+            OnDodgeEnd();
+        }
+    }
+
+    // TODO FLASH ON HURT
+    public Renderer theSprite;
+    public Color origColor;
+    public Color flashColor;
+    public int flashAmount = 3;
+    public float flashTimer;
+    public bool flashing;
+
+    public void FlashColor()
+    {
+        flashing = !flashing;
+        if (flashing)
+        {
+            theSprite.material.color = flashColor;
+        }
+        else
+        {
+            //theSprite.color = Color.Lerp(theSprite.color, origColor, flashTimer * Time.deltaTime);
+            theSprite.material.color = origColor;
+
+        }
+    }
+
+    IEnumerator Flash()
+    {
+        var t = 0;
+        var flashes = flashAmount;
+        while (t < flashes)
+        {
+            Debug.Log("Flashing " + flashing + " " + t);
+            FlashColor();
+            t++;
+            yield return new WaitForSeconds(flashTimer);
+        }
+
     }
 }

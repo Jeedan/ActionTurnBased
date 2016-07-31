@@ -1,0 +1,167 @@
+fileFormatVersion: 2
+guid: 9009ff0e488d0484ab0c5929742311f9
+timeCreated: 1469743710
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: slash_attack_0
+    21300002: slash_attack_1
+    21300004: slash_attack_2
+    21300006: slash_attack_4
+    21300008: slash_attack_11
+    21300010: slash_attack_3
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: slash_attack_0
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 0
+        width: 54
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -24, y: 23}
+        - {x: -27, y: 23}
+        - {x: -27, y: 15}
+        - {x: 6, y: -51}
+        - {x: 14, y: -51}
+        - {x: 14, y: -15}
+        - {x: -18, y: 21}
+    - name: slash_attack_1
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 99
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -49.5, y: 50}
+        - {x: -49.5, y: 42}
+        - {x: 48.5, y: -46}
+        - {x: 49.5, y: -46}
+        - {x: 49.5, y: -2}
+        - {x: -3.5, y: 50}
+    - name: slash_attack_2
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 0
+        width: 99
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -31.5, y: 51}
+        - {x: -49.5, y: 51}
+        - {x: -49.5, y: 46}
+        - {x: 46.5, y: -13}
+        - {x: 49.5, y: -13}
+        - {x: 49.5, y: 1}
+        - {x: 43.5, y: 6}
+        - {x: 12.5, y: 39}
+    - name: slash_attack_3
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 0
+        width: 69
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -34.5, y: 51}
+        - {x: -34.5, y: 42}
+        - {x: -8.5, y: 26}
+        - {x: 29.5, y: 14}
+        - {x: 34.5, y: 14}
+        - {x: 34.5, y: 31}
+        - {x: -2.5, y: 51}
+    - name: slash_attack_4
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 0
+        width: 58
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 9, y: 24}
+        - {x: 20, y: 18}
+        - {x: 29, y: 18}
+        - {x: 29, y: 31}
+        - {x: 28, y: 33}
+        - {x: 10, y: 33}
+        - {x: 9, y: 32}
+      - - {x: -2, y: 51}
+        - {x: -14, y: 51}
+        - {x: -17, y: 47}
+        - {x: -17, y: 42}
+        - {x: -5, y: 31}
+        - {x: 7, y: 31}
+        - {x: 9, y: 33}
+        - {x: 9, y: 40}
+      - - {x: -29, y: 51}
+        - {x: -29, y: 45}
+        - {x: -24, y: 44}
+        - {x: -21, y: 44}
+        - {x: -20, y: 46}
+        - {x: -22, y: 51}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

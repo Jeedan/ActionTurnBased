@@ -53,21 +53,7 @@ public class GameDungeonMapState : IState
                 {
                     // get the dungeon info from the clicked icon
                     DungeonInfo dungeonInfo = dungeon.GetComponent<DungeonInfo>();
-
-                    Debug.Log(dungeonInfo.dungeonName);
-
-                    // TODO battle state test
-                    if (dungeonInfo.unlocked == true)
-                    {
-                        game.currentDungeon = dungeonInfo;
-                        IState BattleState = new GameBattleControllerState(game.gameObject, dungeonInfo);
-                        game.AddState("BattleScene", BattleState);
-
-                        // dungeon will be only combat
-                        // will be handled in battleController
-                        // pass DungeonInfo via constructor
-                        game.screenFader.FadeToggle(FadeAndGoToBattleScene);
-                    }
+                    CreateNewDungeon(dungeonInfo);
                 }
             }
         }
@@ -79,6 +65,25 @@ public class GameDungeonMapState : IState
         }
     }
 
+    // dungeon will be only combat
+    // will be handled in battleController
+    // pass DungeonInfo via constructor
+    void CreateNewDungeon(DungeonInfo dungeonInfo)
+    {
+
+        Debug.Log(dungeonInfo.dungeonName);
+
+        // TODO battle state test
+        if (dungeonInfo.unlocked == true)
+        {
+            game.currentDungeon = dungeonInfo;
+
+            IState BattleState = new GameBattleControllerState(game.gameObject, dungeonInfo);
+            game.AddState("BattleScene", BattleState);
+
+            game.screenFader.FadeToggle(FadeAndGoToBattleScene);
+        }
+    }
 
     void FadeAndGoToBattleScene()
     {

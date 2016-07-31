@@ -16,7 +16,6 @@ public class GameController : MonoBehaviour
     // right now we will instantiate an enemy in BattleScene and pass it to this value
     public Entity currentEnemy;
 
-    public GameObject[] Enemies; // these are the enemy design prefabs 
     public DungeonInfo[] dungeons; // the levels
 
     public DungeonInfo currentDungeon;

@@ -1,68 +1,97 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
 public class Entity : MonoBehaviour
 {
     public string myName = "entity";
     public bool isDead = false;
     public float health;
-    private float maxHealth;
+    protected float maxHealth;
 
     public float damage = 1;
-    private bool hasDealtDamage = false;
+    protected bool hasDealtDamage = false;
 
     // events
     //public Action OnAttackStart;
     //public Action OnAttackFinish;
-    
-    public MeleeAttack basicAttack;
+
+    public Abilities basicAttack;
+    public Abilities[] abilityList = new Abilities[] { new MeleeAttack(), new DiagonalAttacks() };
 
     //Battle position
     public Vector3 battlePosition;
 
-
-
-    Entity target;
+    protected Entity target;
 
     // Use this for initialization
-    void Awake()
+    protected virtual void Awake()
     {
         maxHealth = health;
-        basicAttack = GetComponent<MeleeAttack>();
+        //basicAttack = GetComponent<Abilities>();
+
+
+    }
+
+    protected virtual void Start()
+    {
+        battlePosition = transform.parent.transform.position;
+
+        CapsuleCollider collider = GetComponent<CapsuleCollider>();
+
+        basicAttack = new MeleeAttack();
+        basicAttack.Initialize(transform, collider, this);
 
         if (basicAttack != null)
         {
             basicAttack.OnAttackFinish += OnAttackComplete;
             basicAttack.OnDealDamage += DealDamageToTarget;
         }
+
+        abilityList = new Abilities[2];
+
+        abilityList[0] = new MeleeAttack();
+        abilityList[1] = new DiagonalAttacks();
+
+        for (int i = 0; i < abilityList.Length; i++)
+        {
+            abilityList[i].Initialize(transform, collider, this);
+
+            if(abilityList[i] != null)
+            {
+                abilityList[i].OnAttackFinish += OnAttackComplete;
+                abilityList[i].OnDealDamage += DealDamageToTarget;
+            }
+        }
+
     }
 
-    void Start()
+    public virtual void PickRandomMove()
     {
+        var randomIndex = Random.Range(0, abilityList.Length);
 
-        battlePosition = transform.parent.transform.position;
+        basicAttack = abilityList[randomIndex];
+
+        Debug.Log("Ability choice " + randomIndex);
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         if (Dead())
         {
             Debug.Log("We dead");
             gameObject.SetActive(false);
         }
-
     }
 
 
-    public void DealDamage(Entity target, float dmg)
+    public virtual void DealDamage(Entity target, float dmg)
     {
         // do not deal damage if we already dealt damage this frame
 
         if (hasDealtDamage) return;
 
-        if (target.Dead())
+        if (target != null && target.Dead())
         {
             basicAttack.isAttacking = false;
             hasDealtDamage = false;
@@ -76,18 +105,19 @@ public class Entity : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage)
     {
         health -= damage;
+        // TODO ADD UPDATEHEALTH EVENT FOR UI
     }
 
-    public bool Dead()
+    public virtual bool Dead()
     {
         return health <= 0;
     }
 
     // if we use an object pooler we can use this function to reset our entities
-    public void Reset()
+    public virtual void Reset()
     {
         health = maxHealth;
         isDead = false;
@@ -106,29 +136,36 @@ public class Entity : MonoBehaviour
     //
     //========================================================================================
 
-    private void OnAttackComplete()
+    protected virtual void OnAttackComplete()
     {
 
         hasDealtDamage = false;
         // this is used for UI stuff
     }
 
-    private void DealDamageToTarget()
+    protected virtual void DealDamageToTarget()
     {
         DealDamage(target, damage);
     }
 
-    public void PerformBasicAttack(Entity _target)
+    public virtual void PerformBasicAttack(Entity _target)
     {
-        target = _target;
 
+        target = _target;
 
         if (target != null && !target.basicAttack.isAttacking && !Dead())
         {
             // set the target's position
             basicAttack.SetTarget(target.gameObject);
             basicAttack.SetTargetPosition(target.battlePosition);
-            basicAttack.Anticipation();
+            basicAttack.BeginAbility();
+            //basicAttack.Anticipation();
         }
+    }
+
+    public void TestCoroutineStart(IEnumerator startCor)
+    {
+        IEnumerator newCor = startCor;
+        StartCoroutine(newCor);
     }
 }
